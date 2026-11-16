@@ -94,3 +94,12 @@ html{scroll-behavior:auto}
 .history-next-list em{font-style:normal;font-size:12px;font-weight:600;letter-spacing:.04em;padding:5px 13px;border:1px solid var(--ink);border-radius:999px;color:var(--ink);white-space:nowrap}
 @media(max-width:900px){.history-next{grid-template-columns:29% 1fr;gap:50px;padding-top:50px}.history-next::before{left:calc(29% + 10px)}.history-next-label h3{font-size:76px}.history-next .history-next-label p{font-size:15px}.history-next-list li{grid-template-columns:78px 1fr auto;gap:16px}.history-next-list li::before{left:-45px}.history-next-list span{font-size:16px}}
 @media(max-width:600px){.history-next{display:block;margin:0 0 0 6px;padding:36px 0 0 24px}.history-next::before{left:0;bottom:0}.history-next-label{margin-bottom:22px}.history-next-label h3{font-size:54px;margin-bottom:8px;-webkit-text-stroke-width:1.2px}.history-next .history-next-label p{font-size:14px}.history-next-list li{grid-template-columns:70px 1fr auto;gap:12px;padding:18px 0}.history-next-list li::before{left:-29px}.history-next-list time,.history-next-list span{font-size:15px}.history-next-list em{font-size:11px;padding:4px 10px}}
+
+/* ---- 메인 1번 사진: 넓은 화면에서 위아래가 잘리지 않도록 높이를 화면 폭에 맞춘다 ---- */
+@media(min-width:1500px){.hero{height:clamp(800px,50vw,calc(100svh - var(--header)))}.hero-photo{object-position:center 40%}}
+@media(max-width:600px){.hero-photo{object-position:center top}}
+/* 넓은 화면에서는 넘김 버튼이 사진 속 매트 제품과 겹치므로 버튼 뒤에 반투명 바탕을 깐다 */
+@media(min-width:1576px){.hero-controls::before{content:'';position:absolute;left:-22px;top:-9px;bottom:-9px;width:440px;border-radius:999px;background:#f3f5eed9;backdrop-filter:blur(8px);z-index:-1}}
+/* 모바일 1번: 글자는 위쪽 단색 바탕에, 세로 사진은 그 아래에 배치해 인물이 글자에 가리지 않게 한다 */
+@media(max-width:600px){.hero-photo{top:235px;height:calc(100% - 235px);object-position:center 12%}.hero-shade{background:linear-gradient(180deg,#f3f5ee 0,#f3f5ee 240px,#f3f5ee00 380px)}}
+@media(max-width:600px){.hero-controls::before{content:'';position:absolute;left:-12px;right:-12px;top:-6px;bottom:-6px;border-radius:999px;background:#f3f5eed9;backdrop-filter:blur(8px);z-index:-1}}
