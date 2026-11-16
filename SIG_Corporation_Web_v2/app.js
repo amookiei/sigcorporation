@@ -30,6 +30,8 @@
       $('.cert-close').addEventListener('click',()=>certDialog.close());
       certDialog.addEventListener('click',e=>{if(e.target===certDialog)certDialog.close();});
       certDialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
+      const certMore=$('.cert-more'),certGrid=$('#cert-grid');
+      if(certMore)certMore.addEventListener('click',()=>{const open=certGrid.classList.toggle('is-expanded');certMore.setAttribute('aria-expanded',String(open));certMore.textContent=open?'접기':`전체 ${certMore.dataset.total}건 보기`;if(!open)certGrid.scrollIntoView({block:'nearest',behavior:reduced.matches?'instant':'smooth'});});
     }
     const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
     $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
