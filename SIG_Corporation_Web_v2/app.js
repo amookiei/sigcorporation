@@ -30,8 +30,6 @@
       $('.cert-close').addEventListener('click',()=>certDialog.close());
       certDialog.addEventListener('click',e=>{if(e.target===certDialog)certDialog.close();});
       certDialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
-      const certMore=$('.cert-more'),certGrid=$('#cert-grid');
-      if(certMore)certMore.addEventListener('click',()=>{const open=certGrid.classList.toggle('is-expanded');certMore.setAttribute('aria-expanded',String(open));certMore.textContent=open?'접기':`전체 ${certMore.dataset.total}건 보기`;if(!open)certGrid.scrollIntoView({block:'nearest',behavior:reduced.matches?'instant':'smooth'});});
     }
     const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
     $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
@@ -50,6 +48,29 @@
     reduced.addEventListener('change',startTimer);
     // 기본값: 자동 재생 켜짐(모션 감소 설정 사용자는 꺼진 상태로 시작)
     if(!reduced.matches)$('#hero-play').click();
+    // 2·3번 슬라이드의 제품 이미지를 글자·넘김 버튼과 겹치지 않는 영역에 맞춘다.
+    // 글자의 실제 오른쪽 끝과 아래 끝을 재서, 옆에 둘 공간이 있으면 오른쪽에, 없으면 글자 아래에 배치한다.
+    function fitHeroArt(){
+      const controls=Array.from($('.hero-controls').children);
+      $$('.product-slide,.platform-slide').forEach(slide=>{
+        const box=slide.getBoundingClientRect(),copy=slide.querySelector('.hero-copy'),img=slide.querySelector('img');if(!box.width)return;
+        const gutter=copy.getBoundingClientRect().left-box.left;let right=0,bottom=0;
+        Array.from(copy.children).forEach(el=>{let r=el.getBoundingClientRect();if(el.tagName!=='A'){const range=document.createRange();range.selectNodeContents(el);r=range.getBoundingClientRect();}right=Math.max(right,r.right-box.left);bottom=Math.max(bottom,r.bottom-box.top);});
+        const controlsRight=Math.max(...controls.map(el=>el.getBoundingClientRect().right))-box.left,aboveControls=box.height-Math.min(...controls.map(el=>el.getBoundingClientRect().top))+box.top+16;
+        const pad=img.classList.contains('hero-dashboard')?48:0,ratio=(img.naturalWidth||+img.getAttribute('width'))/(img.naturalHeight||+img.getAttribute('height'));
+        // 후보: ①글자·버튼 오른쪽 전체 높이 ②글자 오른쪽, 버튼 위 ③글자 아래
+        const options=[
+          {left:Math.max(right,controlsRight)+40,top:pad,bottom:Math.max(pad,24),stacked:false},
+          {left:right+32,top:pad/2,bottom:aboveControls,stacked:false},
+          {left:gutter,top:bottom+24,bottom:aboveControls,stacked:true}
+        ].map(o=>{const w=box.width-o.left-gutter,h=box.height-o.top-o.bottom,shown=Math.max(0,Math.min(w,h*ratio));return Object.assign(o,{shown:w>0&&h>0?shown:0});});
+        const best=options.reduce((x,y)=>y.shown>x.shown*1.05?y:x);
+        if(best.stacked){const spare=(box.height-best.top-best.bottom-best.shown/ratio)/2;if(spare>0){best.top+=spare;best.bottom+=spare;}}
+        slide.classList.toggle('is-stacked',best.stacked);
+        slide.style.setProperty('--art-left',best.left+'px');slide.style.setProperty('--art-right',gutter+'px');slide.style.setProperty('--art-top',best.top+'px');slide.style.setProperty('--art-bottom',best.bottom+'px');
+      });
+    }
+    fitHeroArt();window.addEventListener('resize',fitHeroArt);window.addEventListener('load',fitHeroArt);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitHeroArt);
     showSlide(0);
   }
   let updateHistory=()=>{};
