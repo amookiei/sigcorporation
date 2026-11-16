@@ -103,3 +103,5 @@ html{scroll-behavior:auto}
 /* 모바일 1번: 글자는 위쪽 단색 바탕에, 세로 사진은 그 아래에 배치해 인물이 글자에 가리지 않게 한다 */
 @media(max-width:600px){.hero-photo{top:235px;height:calc(100% - 235px);object-position:center 12%}.hero-shade{background:linear-gradient(180deg,#f3f5ee 0,#f3f5ee 240px,#f3f5ee00 380px)}}
 @media(max-width:600px){.hero-controls::before{content:'';position:absolute;left:-12px;right:-12px;top:-6px;bottom:-6px;border-radius:999px;background:#f3f5eed9;backdrop-filter:blur(8px);z-index:-1}}
+/* 표는 모든 폭에서 화면 안에 들어오므로 스크롤 영역을 끈다(등장 애니메이션 중 세로 스크롤바가 생기던 문제) */
+.table-scroll{overflow:visible}
