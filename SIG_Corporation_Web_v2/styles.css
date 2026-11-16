@@ -105,3 +105,14 @@ html{scroll-behavior:auto}
 @media(max-width:600px){.hero-controls::before{content:'';position:absolute;left:-12px;right:-12px;top:-6px;bottom:-6px;border-radius:999px;background:#f3f5eed9;backdrop-filter:blur(8px);z-index:-1}}
 /* 표는 모든 폭에서 화면 안에 들어오므로 스크롤 영역을 끈다(등장 애니메이션 중 세로 스크롤바가 생기던 문제) */
 .table-scroll{overflow:visible}
+/* ---- 모바일 메인: 세로 사진을 자르지 않고 원래 비율(1350:2000) 그대로 보여준다 ----
+   위 250px은 글자 영역, 그 아래 사진 전체, 맨 아래 64px은 넘김 버튼 자리 */
+@media(max-width:600px){
+.hero{height:calc(250px + 148.15vw + 64px);max-height:none;min-height:0}
+.hero-copy{padding-top:36px}
+.hero-photo{top:250px;height:148.15vw;object-position:center top}
+.hero-shade{background:linear-gradient(180deg,#f3f5ee 0,#f3f5ee 250px,#f3f5ee00 330px)}
+.hero-controls{bottom:12px}
+.hero-controls::before{content:none}
+.hero-device,.hero-dashboard{top:auto;bottom:76px;right:-4%;height:45%}
+}
