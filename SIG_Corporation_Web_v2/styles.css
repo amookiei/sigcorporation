@@ -116,3 +116,17 @@ html{scroll-behavior:auto}
 .hero-controls::before{content:none}
 .hero-device,.hero-dashboard{top:auto;bottom:76px;right:-4%;height:45%}
 }
+
+/* ---- 인증서 갤러리: PC 5열 / 태블릿 3열 / 모바일 2열, 누르면 크게 보기 ---- */
+.cert-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+.cert-card{display:block;width:100%;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:zoom-in}
+.cert-thumb{display:block;aspect-ratio:595/842;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;transition:border-color .3s,box-shadow .3s,transform .3s cubic-bezier(.22,.61,.36,1)}
+.cert-thumb img{display:block;width:100%;height:100%;object-fit:contain}
+.cert-card:hover .cert-thumb,.cert-card:focus-visible .cert-thumb{border-color:var(--ink);box-shadow:0 14px 30px #25331820;transform:translateY(-4px)}
+.cert-name{display:block;margin-top:14px;font-size:16px;font-weight:600;line-height:1.4;word-break:keep-all}
+.cert-meta{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
+.cert-dialog{width:min(720px,calc(100% - 32px));background:#fff}
+.cert-dialog img{display:block;width:100%;height:auto}
+.cert-dialog p{margin:0;padding:16px 60px 18px 22px;font-size:15px;line-height:1.6;border-top:1px solid var(--line)}
+@media(max-width:900px){.cert-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}}
+@media(max-width:600px){.cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}.cert-name{font-size:14px;margin-top:10px}.cert-meta{font-size:12px}.cert-dialog p{font-size:13px;padding:12px 16px}}

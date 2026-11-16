@@ -23,6 +23,14 @@
     $('.dialog-close').addEventListener('click',()=>dialog.close());
     dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
     dialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
+    // 인증서 크게 보기
+    const certDialog=$('#cert-dialog');
+    if(certDialog){
+      $$('.cert-card').forEach(card=>card.addEventListener('click',()=>{$('#cert-full').src=card.dataset.cert;$('#cert-full').alt=card.dataset.caption;$('#cert-caption').textContent=card.dataset.caption;certDialog.showModal();document.body.classList.add('modal-open');}));
+      $('.cert-close').addEventListener('click',()=>certDialog.close());
+      certDialog.addEventListener('click',e=>{if(e.target===certDialog)certDialog.close();});
+      certDialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
+    }
     const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
     $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
     // 모바일 카드형 표에서 각 값 위에 표 머리글을 보여주기 위한 라벨
