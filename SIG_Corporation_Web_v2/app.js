@@ -25,6 +25,8 @@
     dialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
     const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
     $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
+    // 모바일 카드형 표에서 각 값 위에 표 머리글을 보여주기 위한 라벨
+    $$('.proof-table:not(.core-table):not(.trademark-table)').forEach(table=>{const heads=Array.from(table.querySelectorAll('thead th'),th=>th.textContent);table.querySelectorAll('tbody tr').forEach(row=>Array.from(row.children).forEach((cell,n)=>{cell.dataset.label=heads[n]||'';}));});
   }
   if($('.hero')){
     const slides=$$('.hero-slide');let active=0,timer=null,playing=false;
@@ -42,8 +44,11 @@
   if($('#history-list')){
     $('#history-list').insertAdjacentHTML('beforeend',data.history.map((item,i)=>`<section class="history-year${i===0?' is-active':''}" id="year-${item.year}" data-year="${item.year}" aria-labelledby="heading-${item.year}"><div class="history-year-label"><h3 id="heading-${item.year}">${item.year}</h3><p>${escape(item.caption)}</p></div><dl>${item.events.map(([month,text])=>`<div class="history-event"><dt>${month}</dt><dd>${escape(text)}</dd></div>`).join('')}</dl></section>`).join(''));
     const years=$$('.history-year'),links=$$('.year-nav a');let current=-1;
-    updateHistory=()=>{const target=Math.min(window.innerHeight*.38,320);let next=0;years.forEach((year,i)=>{if(year.getBoundingClientRect().top<=target)next=i;});const list=$('#history-list').getBoundingClientRect();const progress=Math.min(1,Math.max(0,(target-list.top)/list.height));$('#history-list').style.setProperty('--history-progress',String(progress));if(next===current)return;current=next;years.forEach((y,i)=>y.classList.toggle('is-active',i===next));links.forEach((a,i)=>{a.classList.toggle('is-active',i===next);if(i===next)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');});};
-    links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const section=document.getElementById(a.hash.slice(1));const gap=header.offsetHeight+$('.year-nav').offsetHeight+28;window.scrollTo({top:window.scrollY+section.getBoundingClientRect().top-gap,behavior:reduced.matches?'instant':'smooth'});}));
+    const yearNav=$('.year-nav'),historyList=$('#history-list');
+    // 화면 중앙(헤더·연도 메뉴를 뺀 보이는 영역의 가운데)에 걸친 연도를 강조한다.
+    const focusLine=()=>(header.offsetHeight+yearNav.offsetHeight+window.innerHeight)/2;
+    updateHistory=()=>{const center=focusLine();historyList.style.setProperty('--history-center',center+'px');let next=0;years.forEach((year,i)=>{if(year.getBoundingClientRect().top<=center+40)next=i;});const list=historyList.getBoundingClientRect();const progress=Math.min(1,Math.max(0,(center-list.top)/list.height));historyList.style.setProperty('--history-progress',progress.toFixed(4));if(next===current)return;current=next;years.forEach((y,i)=>y.classList.toggle('is-active',i===next));links.forEach((a,i)=>{a.classList.toggle('is-active',i===next);if(i===next)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');});};
+    links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const section=document.getElementById(a.hash.slice(1));window.scrollTo({top:Math.max(0,window.scrollY+section.getBoundingClientRect().top-focusLine()+60),behavior:reduced.matches?'instant':'smooth'});}));
   }
   if($('#news-grid')){
     function renderNews(filter='전체'){const news=data.news.filter(n=>filter==='전체'||n.category===filter);$('#news-grid').innerHTML=news.map(n=>`<article class="news-card"><a class="news-image" href="news.html?id=${n.id}" tabindex="-1" aria-hidden="true"><img class="${n.fit}" src="${assets(n.image)}" alt="${escape(n.caption)}" width="700" height="330" loading="lazy"></a><div class="news-card-content"><p class="news-meta">${n.category} · <time>${n.date}</time></p><h3><a href="news.html?id=${n.id}">${escape(n.title)}</a></h3><p class="summary">${escape(n.summary)}</p><a class="news-source" href="${n.url||'news.html?id='+n.id}" ${n.url?external:''}>${n.source} <span aria-hidden="true">↗</span><span class="sr-only">${n.url?' 원문 새 창으로 보기':' 상세 보기'}</span></a></div></article>`).join('');$('#news-status').textContent=`${filter} ${news.length}건`;}
