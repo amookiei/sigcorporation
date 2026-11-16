@@ -36,8 +36,10 @@
     $('#hero-prev').addEventListener('click',()=>{showSlide(active-1);startTimer();});$('#hero-next').addEventListener('click',()=>{showSlide(active+1);startTimer();});
     $('#hero-play').addEventListener('click',()=>{playing=!playing;$('#hero-play').setAttribute('aria-pressed',String(playing));$('#hero-play').setAttribute('aria-label',playing?'자동 재생 정지':'자동 재생 시작');$('#hero-play').textContent=playing?'Ⅱ':'▶';startTimer();});
     $('.hero').addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();showSlide(active+(e.key==='ArrowRight'?1:-1));startTimer();}});
-    $('.hero').addEventListener('mouseenter',stopTimer);$('.hero').addEventListener('mouseleave',startTimer);$('.hero').addEventListener('focusin',stopTimer);$('.hero').addEventListener('focusout',startTimer);document.addEventListener('visibilitychange',startTimer);
+    $('.hero').addEventListener('focusin',stopTimer);$('.hero').addEventListener('focusout',startTimer);document.addEventListener('visibilitychange',startTimer);
     reduced.addEventListener('change',startTimer);
+    // 기본값: 자동 재생 켜짐(모션 감소 설정 사용자는 꺼진 상태로 시작)
+    if(!reduced.matches)$('#hero-play').click();
     showSlide(0);
   }
   let updateHistory=()=>{};
