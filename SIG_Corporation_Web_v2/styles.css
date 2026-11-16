@@ -75,3 +75,22 @@ html{scroll-behavior:auto}
 .trademark-table td:last-child{grid-column:1/-1;color:#475142;line-height:1.6}
 }
 @media(prefers-reduced-motion:reduce){.history-year h3{transform:none}.history-year-label p,.history-year dl{opacity:1}}
+
+/* ---- 메인 슬라이드 2·3: 투명 배경 전체 높이 아트워크(피사체가 오른쪽) ---- */
+.hero-device,.hero-dashboard{top:0;right:max(0px,calc((100vw - 1440px)/2));width:auto;height:100%;max-width:none;aspect-ratio:2000/1444;object-fit:contain;object-position:right center;mix-blend-mode:normal;filter:none}
+@media(max-width:900px){.hero-device,.hero-dashboard{top:auto;bottom:0;right:0;height:62%}}
+@media(max-width:600px){.hero-device,.hero-dashboard{top:47%;bottom:auto;right:-6%;height:46%}}
+/* ---- 연혁 NEXT: 타임라인에서 점선으로 이어지는 예정 일정 ---- */
+.history-next{position:relative;display:grid;grid-template-columns:32% 1fr;gap:70px;align-items:start;margin:0;padding:70px 0 10px;background:none;border-radius:0}
+.history-next::before{content:'';position:absolute;left:calc(32% + 16px);top:0;bottom:10px;border-left:1px dashed #aeb8a3}
+.history-next-label h3{margin:0 0 20px;font-size:100px;font-weight:600;line-height:1.05;letter-spacing:-.065em;color:transparent;-webkit-text-stroke:1.5px #b9c1b0}
+.history-next .history-next-label p{margin:0;font-size:17px;line-height:1.8;color:var(--muted)}
+.history-next-list{list-style:none;margin:0;padding:6px 0 0}
+.history-next-list li{position:relative;display:grid;grid-template-columns:96px 1fr auto;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
+.history-next-list li:first-child{border-top:1px solid var(--line)}
+.history-next-list li::before{content:'';position:absolute;left:-59px;top:50%;width:11px;height:11px;margin-top:-5.5px;border:2px solid #aeb8a3;border-radius:50%;background:#fff}
+.history-next-list time{font-size:17px;font-weight:700;color:#7b8b6b;font-variant-numeric:tabular-nums}
+.history-next-list span{font-size:18px;line-height:1.6;color:var(--ink)}
+.history-next-list em{font-style:normal;font-size:12px;font-weight:600;letter-spacing:.04em;padding:5px 13px;border:1px solid var(--ink);border-radius:999px;color:var(--ink);white-space:nowrap}
+@media(max-width:900px){.history-next{grid-template-columns:29% 1fr;gap:50px;padding-top:50px}.history-next::before{left:calc(29% + 10px)}.history-next-label h3{font-size:76px}.history-next .history-next-label p{font-size:15px}.history-next-list li{grid-template-columns:78px 1fr auto;gap:16px}.history-next-list li::before{left:-45px}.history-next-list span{font-size:16px}}
+@media(max-width:600px){.history-next{display:block;margin:0 0 0 6px;padding:36px 0 0 24px}.history-next::before{left:0;bottom:0}.history-next-label{margin-bottom:22px}.history-next-label h3{font-size:54px;margin-bottom:8px;-webkit-text-stroke-width:1.2px}.history-next .history-next-label p{font-size:14px}.history-next-list li{grid-template-columns:70px 1fr auto;gap:12px;padding:18px 0}.history-next-list li::before{left:-29px}.history-next-list time,.history-next-list span{font-size:15px}.history-next-list em{font-size:11px;padding:4px 10px}}
