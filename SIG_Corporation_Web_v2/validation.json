@@ -1,0 +1,22 @@
+{
+  "passed": 15,
+  "checks": [
+    "initialization without runtime errors",
+    "eight business areas",
+    "six news items",
+    "press filter returns five articles",
+    "company filter returns one article",
+    "next slide and ARIA state",
+    "previous slide",
+    "mobile menu opens",
+    "mobile menu closes after navigation",
+    "four history years without image stage",
+    "scroll reveal registration",
+    "eleven trademark rows",
+    "news detail title renders",
+    "real article source link",
+    "unknown article has safe fallback"
+  ],
+  "visualValidation": "PC 연혁 배치 및 연도 클릭 이동 확인. 최종 수정 후 브라우저 추가 검사는 URL 확인 오류로 중단됨.",
+  "mobileVisualValidation": "미완료"
+}
