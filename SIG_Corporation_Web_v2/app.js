@@ -31,7 +31,7 @@
       certDialog.addEventListener('click',e=>{if(e.target===certDialog)certDialog.close();});
       certDialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
     }
-    const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
+    const trademarkTypes=[['09','생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','원격 모니터링·건강관리 및 생체정보 분석'],['45','경보 감시·긴급상황 알림 및 안전 모니터링'],['10','심박·호흡·생체신호 측정기기 및 모니터링 장치']];
     $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
     // 모바일 카드형 표에서 각 값 위에 표 머리글을 보여주기 위한 라벨
     $$('.proof-table:not(.core-table):not(.trademark-table)').forEach(table=>{const heads=Array.from(table.querySelectorAll('thead th'),th=>th.textContent);table.querySelectorAll('tbody tr').forEach(row=>Array.from(row.children).forEach((cell,n)=>{cell.dataset.label=heads[n]||'';}));});
