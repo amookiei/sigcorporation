@@ -142,3 +142,32 @@ html{scroll-behavior:auto}
 .cert-name{font-size:17px}
 @media(max-width:900px){.cert-grid{gap:28px 18px}.cert-name{font-size:15px}}
 @media(max-width:600px){.cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}.cert-name{font-size:14px}}
+
+/* ---- KR / EN 전환 ---- */
+html.i18n-pending body{visibility:hidden}
+.site-header nav{margin-left:auto}
+.lang-switch{display:flex;align-items:center;gap:4px;margin-left:26px;font-size:14px;font-weight:600;letter-spacing:.05em;flex:none}
+.lang-switch button{padding:10px 4px;color:#9aa192;font:inherit;letter-spacing:inherit;transition:color .2s}
+.lang-switch button:hover{color:var(--ink)}
+.lang-switch button.is-active{color:var(--ink);text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.lang-switch span{color:#c9cec2;font-weight:400}
+.back-news{margin-left:auto}
+@media(max-width:900px){.lang-switch{order:1;margin-left:auto;margin-right:4px;font-size:13px}.menu-toggle{order:2}.site-header nav{margin-left:0}}
+/* 영문은 글자 폭이 넓어 제목 크기와 자간을 조금 줄인다 */
+html[lang="en"] .hero h1,html[lang="en"] .hero h2{font-size:56px;line-height:1.16;letter-spacing:-.035em}
+html[lang="en"] .hero-copy>p:not(.eyebrow){line-height:1.6}
+html[lang="en"] h2,html[lang="en"] h3{letter-spacing:-.025em}
+html[lang="en"] .history-year h3{letter-spacing:-.065em}
+html[lang="en"] .cert-name{font-size:15px}
+@media(max-width:1199px){html[lang="en"] .hero h1,html[lang="en"] .hero h2{font-size:46px}}
+@media(max-width:900px){html[lang="en"] .hero h1,html[lang="en"] .hero h2{font-size:40px}}
+@media(max-width:600px){html[lang="en"] .hero h1,html[lang="en"] .hero h2{font-size:34px}html[lang="en"] .cert-name{font-size:13px}}
+html[lang="en"] .business-title{font-size:17px;letter-spacing:-.01em}
+html[lang="en"] .history-year-label p{max-width:300px}
+html[lang="en"] .proof-table:not(.core-table):not(.trademark-table) th:first-child{width:48%}
+html[lang="en"] .proof-table:not(.core-table):not(.trademark-table) th:nth-child(2){width:20%}
+html[lang="en"] .proof-table:not(.core-table):not(.trademark-table) th:nth-child(3){width:17%}
+html[lang="en"] .proof-table:not(.core-table):not(.trademark-table) th:nth-child(4){width:15%}
+html[lang="en"] .proof-table td:nth-child(4){overflow-wrap:normal;padding-inline:6px}
+@media(max-width:900px){html[lang="en"] .proof-table td:nth-child(4),html[lang="en"] .proof-table th:nth-child(4){font-size:13px}}
+@media(max-width:600px){html[lang="en"] .business-title{font-size:14px}html[lang="en"] .proof-table td:nth-child(4){padding-inline:0;font-size:14px}}
