@@ -5,7 +5,10 @@
   const data = window.SIG_CONTENT;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const escape = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const assets = file => 'assets/' + file;
+  // 관리자 페이지 미리보기에서는 아직 올리지 않은 이미지를 임시 주소로 보여준다.
+  const assets = file => (window.SIG_ASSET_URLS || {})[file] || 'assets/' + file;
+  const lines = s => escape(s).replace(/\n/g, '<br>');
+  const rich = s => lines(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   const external = 'target="_blank" rel="noopener"';
   const header = $('.site-header');
   const menu = $('.menu-toggle');
@@ -17,13 +20,19 @@
   window.matchMedia('(min-width: 901px)').addEventListener('change',closeMenu);
   if($('#business-grid')){
     $('#business-grid').innerHTML=data.business.map((item,i)=>`<button class="business-card" data-business="${i}" aria-haspopup="dialog"><span class="business-picture"><img src="${assets(item.image)}" alt="" width="640" height="640" loading="lazy"></span><span class="business-title">${escape(item.title)}</span></button>`).join('');
-    $('#partner-grid').innerHTML=['현대건설','가톨릭대학교 서울성모병원','서대문구청','주식회사 하이','중소벤처기업진흥공단','이마트','신용보증기금','씨엔티테크','서울여자간호대학교','헥토헬스케어'].map((name,i)=>`<img src="assets/partner-${i+1}.svg" alt="${name}" loading="lazy" width="220" height="64">`).join('');
+    $('#partner-grid').innerHTML=data.partners.map(p=>`<img src="${assets(p.image)}" alt="${escape(p.name)}" loading="lazy" width="220" height="64">`).join('');
     const dialog=$('#business-dialog');
     $('#business-grid').addEventListener('click',e=>{const b=e.target.closest('[data-business]');if(!b)return;const item=data.business[+b.dataset.business];$('#dialog-title').textContent=item.title.replace('\n',' ');$('#dialog-description').textContent=item.detail;$('#dialog-visual').src=assets(item.visual);$('#dialog-visual').alt=item.title.replace('\n',' ')+' 관련 시니허그 제품 화면';dialog.showModal();document.body.classList.add('modal-open');});
     $('.dialog-close').addEventListener('click',()=>dialog.close());
     dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
     dialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
     // 인증서 크게 보기
+    const certCaption=c=>[c.name,c.number].filter(Boolean).join(' ')+(c.note?' — '+c.note:'');
+    $('#cert-grid').innerHTML=data.certificates.map(c=>`<li><button class="cert-card" type="button" data-cert="${assets(c.image)}" data-caption="${escape(certCaption(c))}" aria-haspopup="dialog"><span class="cert-thumb"><img src="${assets(c.image)}" alt="${escape(certCaption(c))}" loading="lazy"></span><span class="cert-name">${escape(c.name)}</span><span class="cert-meta">${escape(c.number||'')}</span></button></li>`).join('');
+    const proofRow=r=>`<tr><td><strong>${escape(r.title)}</strong><span>${(r.lines||[]).map(escape).join('<br>')}</span></td><td>${escape(r.authority)}</td><td>${escape(r.date)}</td><td>${escape(r.status)}</td></tr>`;
+    $('#patent-rows').innerHTML=data.patents.map(proofRow).join('');
+    $('#highlight-rows').innerHTML=data.patentHighlights.map(h=>`<tr><td>${escape(h.number)}</td><td>${rich(h.text)}</td></tr>`).join('');
+    $('#certification-rows').innerHTML=data.certifications.map(proofRow).join('');
     const certDialog=$('#cert-dialog');
     if(certDialog){
       $$('.cert-card').forEach(card=>card.addEventListener('click',()=>{$('#cert-full').src=card.dataset.cert;$('#cert-full').alt=card.dataset.caption;$('#cert-caption').textContent=card.dataset.caption;certDialog.showModal();document.body.classList.add('modal-open');}));
@@ -31,12 +40,21 @@
       certDialog.addEventListener('click',e=>{if(e.target===certDialog)certDialog.close();});
       certDialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
     }
-    const trademarkTypes=[['09','비의료용 생체신호 측정기기·센서 및 모니터링 앱'],['42','생체신호·수면 분석 소프트웨어, SaaS 및 IoT 원격관리'],['44','의료 목적 원격 모니터링·건강관리 및 생체정보 분석'],['45','의료 경보 감시·긴급상황 알림 및 안전 모니터링'],['10','의료용 심박·호흡·생체신호 측정기기 및 환자 모니터링 장치']];
-    $('#trademark-rows').innerHTML=[0,1,2,3,4,0,1,2,0,1,1].map((t,i)=>`<tr><td>40-2026-02030${63+i}</td><td>제${trademarkTypes[t][0]}류</td><td>${trademarkTypes[t][1]}</td></tr>`).join('');
+    $('#trademark-rows').innerHTML=data.trademarks.map(t=>`<tr><td>${escape(t.number)}</td><td>제${escape(t.classNo)}류</td><td>${escape(t.summary)}</td></tr>`).join('');
     // 모바일 카드형 표에서 각 값 위에 표 머리글을 보여주기 위한 라벨
     $$('.proof-table:not(.core-table):not(.trademark-table)').forEach(table=>{const heads=Array.from(table.querySelectorAll('thead th'),th=>th.textContent);table.querySelectorAll('tbody tr').forEach(row=>Array.from(row.children).forEach((cell,n)=>{cell.dataset.label=heads[n]||'';}));});
   }
   if($('.hero')){
+    // 메인 슬라이드와 회사 소개 문구·이미지는 content.js 값으로 채운다.
+    $$('.hero-slide').forEach((slide,i)=>{
+      const h=data.hero[i];if(!h)return;const tag=i?'h2':'h1',out=/^https?:/.test(h.link);
+      $('.hero-copy',slide).innerHTML=(h.eyebrow?`<p class="eyebrow">${escape(h.eyebrow)}</p>`:'')+`<${tag}>${lines(h.title)}</${tag}><p>${lines(h.text)}</p><a class="button" href="${escape(h.link)}" ${out?external:''}>${escape(h.button)} <span>${escape(h.arrow||'↗')}</span></a>`;
+      const img=$('img',slide);img.alt=h.alt||'';if(h.imageW&&h.imageH){img.width=h.imageW;img.height=h.imageH;}else{img.removeAttribute('width');img.removeAttribute('height');}
+      const source=$('source',slide);if(source)source.srcset=assets(h.imageMobile||h.image);
+      if(h.imageSmall){img.sizes='100vw';img.srcset=`${assets(h.imageSmall)} 1920w, ${assets(h.image)} ${h.imageW||3840}w`;}
+      img.src=assets(h.image);
+    });
+    if($('#about-title')){$('#about-title').innerHTML=lines(data.about.title);$('#about-text').innerHTML=lines(data.about.text);}
     const slides=$$('.hero-slide');let active=0,timer=null,playing=false;
     function showSlide(n){active=(n+slides.length)%slides.length;slides.forEach((s,i)=>{const on=i===active;s.classList.toggle('is-active',on);s.setAttribute('aria-hidden',String(!on));s.inert=!on;});$('#slide-current').textContent=String(active+1).padStart(2,'0');$('.slide-track i').style.transform=`translateX(${active*100}%)`;}
     function stopTimer(){clearInterval(timer);timer=null;}
@@ -75,7 +93,11 @@
   }
   let updateHistory=()=>{};
   if($('#history-list')){
-    $('#history-list').insertAdjacentHTML('beforeend',data.history.map((item,i)=>`<section class="history-year${i===0?' is-active':''}" id="year-${item.year}" data-year="${item.year}" aria-labelledby="heading-${item.year}"><div class="history-year-label"><h3 id="heading-${item.year}">${item.year}</h3><p>${escape(item.caption)}</p></div><dl>${item.events.map(([month,text])=>`<div class="history-event"><dt>${month}</dt><dd>${escape(text)}</dd></div>`).join('')}</dl></section>`).join(''));
+    $('#history-list').insertAdjacentHTML('beforeend',data.history.map((item,i)=>`<section class="history-year${i===0?' is-active':''}" id="year-${item.year}" data-year="${item.year}" aria-labelledby="heading-${item.year}"><div class="history-year-label"><h3 id="heading-${item.year}">${item.year}</h3><p>${escape(item.caption)}</p></div><dl>${item.events.map(e=>`<div class="history-event"><dt>${escape(e.month)}</dt><dd>${escape(e.text)}</dd></div>`).join('')}</dl></section>`).join(''));
+    $('.year-nav').innerHTML=data.history.map((h,i)=>`<a${i?'':' class="is-active" aria-current="true"'} href="#year-${h.year}">${h.year}</a>`).join('');
+    const nextItems=(data.next&&data.next.items)||[];$('.history-next').hidden=!nextItems.length;
+    $('.history-next-label p').textContent=(data.next&&data.next.label)||'';
+    $('.history-next-list').innerHTML=nextItems.map(n=>`<li><time>${escape(n.date)}</time><span>${escape(n.text)}</span><em>예정</em></li>`).join('');
     const years=$$('.history-year'),links=$$('.year-nav a');let current=-1;
     const yearNav=$('.year-nav'),historyList=$('#history-list');
     // 화면 중앙(헤더·연도 메뉴를 뺀 보이는 영역의 가운데)에 걸친 연도를 강조한다.
@@ -90,7 +112,7 @@
   if($('#news-detail')){
     const item=data.news.find(n=>n.id===new URLSearchParams(location.search).get('id'));
     if(!item){document.title='소식을 찾을 수 없습니다 | 시그코퍼레이션';$('#news-detail').innerHTML='<h1>소식을 찾을 수 없습니다.</h1><p>주소를 확인하거나 소식 목록에서 다시 선택해 주세요.</p><div class="detail-actions"><a class="button" href="index.html#news">소식 목록으로 ↗</a></div>';}
-    else{document.title=item.title+' | 시그코퍼레이션';$('meta[name="description"]').content=item.summary;$('#news-detail').innerHTML=`<p class="eyebrow">SIG CORPORATION · NEWSROOM</p><h1>${escape(item.title)}</h1><div class="detail-meta"><span>${item.category}</span><time>${item.date}</time><span>${item.source}</span></div><figure class="detail-figure"><img src="${assets(item.image)}" alt="${escape(item.caption)}"><figcaption>${escape(item.caption)}</figcaption></figure><div class="detail-body">${item.body.map(p=>`<p>${escape(p)}</p>`).join('')}${item.url?'<p class="detail-note">위 내용은 보도의 주요 내용을 요약한 것입니다. 전체 기사는 아래 원문에서 확인하실 수 있습니다.</p>':''}<div class="detail-actions"><a class="button" href="index.html#news">← 소식 목록으로</a>${item.url?`<a class="button" href="${item.url}" ${external}>전자신문 원문 보기 <span>↗</span></a>`:'<a class="button" href="https://www.senihug.com/contact" '+external+'>사업 협력 문의 <span>↗</span></a>'}</div></div>`;}
+    else{document.title=item.title+' | 시그코퍼레이션';$('meta[name="description"]').content=item.summary;$('#news-detail').innerHTML=`<p class="eyebrow">SIG CORPORATION · NEWSROOM</p><h1>${escape(item.title)}</h1><div class="detail-meta"><span>${item.category}</span><time>${item.date}</time><span>${item.source}</span></div><figure class="detail-figure"><img src="${assets(item.image)}" alt="${escape(item.caption)}"><figcaption>${escape(item.caption)}</figcaption></figure><div class="detail-body">${item.body.map(p=>`<p>${escape(p)}</p>`).join('')}${item.url?'<p class="detail-note">위 내용은 보도의 주요 내용을 요약한 것입니다. 전체 기사는 아래 원문에서 확인하실 수 있습니다.</p>':''}<div class="detail-actions"><a class="button" href="index.html#news">← 소식 목록으로</a>${item.url?`<a class="button" href="${item.url}" ${external}>${escape(item.source)} 원문 보기 <span>↗</span></a>`:'<a class="button" href="https://www.senihug.com/contact" '+external+'>사업 협력 문의 <span>↗</span></a>'}</div></div>`;}
   }
 
   // Native scrolling only. Entrance effects never intercept wheel/touch input.

@@ -9,7 +9,8 @@ const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8',
 http.createServer(async(req,res)=>{
  try{
   const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
-  const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
+  const clean=pathname.endsWith('/')?pathname+'index.html':(path.extname(pathname)?pathname:pathname+'/index.html');
+  const file=path.resolve(root,'.'+clean);
   if(file!==root&&!file.startsWith(root+path.sep)){res.writeHead(403);return res.end('Forbidden');}
   const body=await fs.readFile(file);
   res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'});res.end(body);

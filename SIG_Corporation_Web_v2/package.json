@@ -5,7 +5,7 @@
   "description": "SIG Corporation responsive static corporate website",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check app.js && node --check content.js && node --check i18n.js && node --check server.mjs"
+    "check": "node --check app.js && node --check content.js && node --check i18n.js && node --check admin/admin.js && node --check server.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -11,6 +11,11 @@
   if (param === 'en' || param === 'ko') lang = param;
   window.SIG_LANG = lang;
 
+  // ---------- 관리자 페이지의 '미리보기': 저장 전 내용을 이 탭에서만 보여준다 ----------
+  if (new URLSearchParams(location.search).get('preview') === '1') {
+    try { const draft = JSON.parse(sessionStorage.getItem('sig-preview') || 'null'); if (draft && draft.data) { window.SIG_CONTENT = draft.data; window.SIG_ASSET_URLS = draft.assets || {}; document.documentElement.classList.add('is-preview'); } } catch (e) {}
+  }
+
   // ---------- 헤더 오른쪽 KR / EN 버튼 ----------
   const headerInner = document.querySelector('.header-inner');
   if (headerInner) {
@@ -152,10 +157,28 @@
     [/^유효기간 (.+)$/, (m) => 'Valid ' + m[1]],
     [/^(.+) (\d+)건$/, (m, t) => (t(m[1]) || m[1]) + ' · ' + m[2] + (m[2] === '1' ? ' item' : ' items')],
     [/^(.+) 관련 시니허그 제품 화면$/, (m, t) => 'SeniHug product screen for ' + (t(m[1]) || m[1]).replace(/\s+/g, ' ')],
+    [/^(.+) 원문 보기$/, (m, t) => 'Read the original on ' + (t(m[1]) || m[1]) + ' (Korean)'],
     [/^(.+) ·$/, (m, t) => (t(m[1]) || m[1]) + ' ·']
   ];
   const HAN = /[가-힣]/, norm = s => s.replace(/\s+/g, ' ').trim();
   const missing = window.SIG_I18N_MISSING = new Set();
+
+  // ---------- content.js 의 영문(*_en) 값을 사전에 합친다. 관리자 페이지에서 입력한 번역이 위 사전보다 우선한다 ----------
+  const escHtml = t => t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function learn(ko, en) {
+    if (typeof ko !== 'string' || typeof en !== 'string' || !en.trim() || !HAN.test(ko)) return;
+    const key = norm(ko.replace(/\*\*/g, ''));
+    TEXT[key] = en.replace(/\*\*/g, '');
+    if (/\n|\*\*/.test(ko)) HTML[key] = escHtml(en).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  }
+  (function walk(o) {
+    if (Array.isArray(o)) o.forEach(walk);
+    else if (o && typeof o === 'object') for (const k of Object.keys(o)) {
+      if (!k.endsWith('_en')) { walk(o[k]); continue; }
+      const ko = o[k.slice(0, -3)], en = o[k];
+      if (Array.isArray(ko) && Array.isArray(en)) ko.forEach((x, i) => learn(x, en[i])); else learn(ko, en);
+    }
+  })(window.SIG_CONTENT || {});
 
   function translate(raw, tag) {
     const key = norm(raw);
@@ -193,7 +216,12 @@
   apply(document.documentElement);
   // app.js 가 나중에 그리는 내용(뉴스, 연혁, 사업영역, 팝업 등)도 나타나는 즉시 번역
   new MutationObserver(list => list.forEach(m => {
-    if (m.type === 'childList') m.addedNodes.forEach(apply);
+    if (m.type === 'childList') {
+      // 이미 있던 요소의 내용만 바뀐 경우(예: 회사 소개 문단)도 문단 단위 번역을 먼저 시도한다
+      const el = m.target;
+      if (el.nodeType === 1 && el.firstElementChild && /^(H[1-4]|P|TD|DD|LI|FIGCAPTION)$/.test(el.tagName)) { const html = HTML[keyOf(el)]; if (html) { el.innerHTML = html; return; } }
+      m.addedNodes.forEach(apply);
+    }
     else if (m.type === 'characterData') textNode(m.target);
     else if (m.type === 'attributes') attrs(m.target);
   })).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });

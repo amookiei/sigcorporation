@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>관리자 | 시그코퍼레이션</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sig-logo.svg">
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script defer src="/admin/admin.js"></script>
+</head>
+<body>
+  <!-- 로그인 -->
+  <main class="login" id="login" hidden>
+    <form class="login-card" id="login-form">
+      <img src="/assets/sig-logo.svg" width="80" height="38" alt="SIG">
+      <h1>홈페이지 관리자</h1>
+      <p>GitHub 액세스 토큰으로 로그인합니다. 토큰은 이 브라우저에만 보관되고 GitHub 외에는 어디로도 전송되지 않습니다.</p>
+      <label for="token">GitHub 토큰</label>
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_..." required>
+      <label class="check"><input id="remember" type="checkbox" checked> 이 기기에서 로그인 유지</label>
+      <button class="btn primary" type="submit">로그인</button>
+      <p class="login-error" id="login-error" role="alert"></p>
+      <details class="login-help">
+        <summary>토큰은 어떻게 만드나요?</summary>
+        <ol>
+          <li>GitHub에 로그인한 뒤 <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens</b>로 이동합니다.</li>
+          <li><b>Generate new token</b>을 누르고, Repository access에서 <b>Only select repositories</b> → 이 홈페이지 저장소를 고릅니다.</li>
+          <li>Permissions의 Repository permissions에서 <b>Contents</b>를 <b>Read and write</b>로 설정합니다.</li>
+          <li>만들어진 토큰(<code>github_pat_</code>로 시작)을 복사해 위 칸에 붙여 넣습니다.</li>
+        </ol>
+        <p>토큰은 비밀번호와 같습니다. 다른 사람과 공유하지 말고, 공용 PC에서는 "로그인 유지"를 끄세요.</p>
+      </details>
+    </form>
+  </main>
+
+  <!-- 편집 화면 -->
+  <div class="app" id="app" hidden>
+    <header class="topbar">
+      <a class="topbar-brand" href="/" target="_blank" rel="noopener"><img src="/assets/sig-logo.svg" width="60" height="28" alt="SIG"><span>관리자</span></a>
+      <p class="topbar-status" id="status" role="status"></p>
+      <div class="topbar-actions">
+        <button class="btn" id="preview" type="button">미리보기</button>
+        <button class="btn primary" id="save" type="button" disabled>저장하고 배포</button>
+        <button class="btn ghost" id="logout" type="button">로그아웃</button>
+      </div>
+    </header>
+    <div class="layout">
+      <nav class="sidebar" id="sidebar" aria-label="편집할 구간"></nav>
+      <section class="editor" id="editor"></section>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <noscript><p style="padding:40px">관리자 페이지는 JavaScript가 필요합니다.</p></noscript>
+</body>
+</html>

@@ -171,3 +171,5 @@ html[lang="en"] .proof-table:not(.core-table):not(.trademark-table) th:nth-child
 html[lang="en"] .proof-table td:nth-child(4){overflow-wrap:normal;padding-inline:6px}
 @media(max-width:900px){html[lang="en"] .proof-table td:nth-child(4),html[lang="en"] .proof-table th:nth-child(4){font-size:13px}}
 @media(max-width:600px){html[lang="en"] .business-title{font-size:14px}html[lang="en"] .proof-table td:nth-child(4){padding-inline:0;font-size:14px}}
+.history-next[hidden]{display:none}
+html.is-preview::before{content:"미리보기 — 아직 저장되지 않은 내용입니다";position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;padding:10px 18px;border-radius:999px;background:#253318;color:#fff;font-size:13px;box-shadow:0 8px 24px #0003;pointer-events:none}
